@@ -2,3 +2,6 @@ flask
 flask-cors
 requests
 werkzeug
+apscheduler
+cryptography
+websocket-client
