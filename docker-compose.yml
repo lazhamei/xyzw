@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.aliyun
+    container_name: xyzw-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    networks:
+      - xyzw-network
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: xyzw-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    networks:
+      - xyzw-network
+    volumes:
+      - backend-data:/app/data
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-change-this-in-production-to-a-random-string}
+
+volumes:
+  backend-data:
+    driver: local
+
+networks:
+  xyzw-network:
+    driver: bridge
