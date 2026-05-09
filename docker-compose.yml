@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: xyzw-backend
+    ports:
+      - "8787:8787"
+    environment:
+      - NODE_ENV=production
+      - BACKEND_PORT=8787
+      - JWT_SECRET=${JWT_SECRET:-your-production-jwt-secret-key-change-this}
+      - AES_KEY=${AES_KEY:-your-production-aes-key-change-this}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://localhost:80}
+      - DB_PATH=/app/data/xyzw.sqlite.bin
+      - BIN_STORAGE_PATH=/app/data/bin-storage
+      - BACKEND_ERROR_LOG_PATH=/app/data/backend-errors.log
+      - LOG_REQUESTS=true
+    volumes:
+      - backend-data:/app/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: xyzw-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend-data:
